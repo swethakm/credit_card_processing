@@ -31,36 +31,35 @@ class CreditCardControllerTest {
     @Test
     @DisplayName("When get creditCards is requested then list of creditcards returned")
     void getAllCreditCards() throws Exception {
-        String result =  mockMvc
-                .perform(get("/creditcards"))
+        String result = mockMvc
+                .perform(get("/creditcards/list"))
                 .andExpect(status().is2xxSuccessful())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
         assertEquals("[{\"cardNumber\":\"1111 2222 3333 4444\",\"name\":\"Alice\",\"balance\":-1045.0,\"limit\":2000.0}" +
-                ",{\"cardNumber\":\"4444 3333 2222 1111\",\"name\":\"Bob\",\"balance\":10.24,\"limit\":5000.0}]",result);
+                ",{\"cardNumber\":\"4444 3333 2222 1111\",\"name\":\"Bob\",\"balance\":10.24,\"limit\":5000.0}]", result);
     }
 
     @Test
     @DisplayName("When a creditCard creation is requested then it is persisted")
     void addCreditCard() throws Exception {
-        CreditCard creditCard = new CreditCard("4929 3890 8814 2556","Test User",3000);
+        CreditCard creditCard = new CreditCard("4929 3890 8814 2556", "Test User", 3000);
         CreditCard newCard =
-                mapper
-                        .readValue(
-                                mockMvc
-                                        .perform(
-                                                post("/creditcards/add")
-                                                        .contentType(MediaType.APPLICATION_JSON)
-                                                        .content(mapper.writeValueAsString(creditCard)))
-                                        .andExpect(status().isCreated())
-                                        .andReturn()
-                                        .getResponse()
-                                        .getContentAsString(),
-                                CreditCard.class);
+                mapper.readValue(
+                        mockMvc
+                                .perform(
+                                        post("/creditcards/add")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(mapper.writeValueAsString(creditCard)))
+                                .andExpect(status().isCreated())
+                                .andReturn()
+                                .getResponse()
+                                .getContentAsString(),
+                        CreditCard.class);
 
-        assertThat(creditCard,equalTo(newCard));
-        assertEquals(0,newCard.getBalance());
+        assertThat(creditCard, equalTo(newCard));
+        assertEquals(0, newCard.getBalance());
 
     }
 
@@ -86,7 +85,8 @@ class CreditCardControllerTest {
     @Test
     @DisplayName("When a creditCard creation is requested then it is persisted")
     void addCreditCard_CardNumber_InvalidChar() throws Exception {
-        CreditCard creditCard = new CreditCard("4444 3333 1ad2 1221", "Test User", 3000);
+        CreditCard creditCard = new CreditCard("4444 $" +
+                "333 1ad2 1221", "Test User", 3000);
 
         String error = mockMvc
                 .perform(

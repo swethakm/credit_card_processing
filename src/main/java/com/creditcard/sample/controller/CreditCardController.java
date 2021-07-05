@@ -16,7 +16,7 @@ public class CreditCardController {
 
     private CreditCardService creditCardService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<CreditCard> getAllCreditCards() {
         return creditCardService.getAllCreditCards();

@@ -10,7 +10,7 @@ public class CreditCardValidator implements ConstraintValidator<CardNumberConstr
     @Override
     public boolean isValid(String number, ConstraintValidatorContext constraintValidatorContext) {
         final String cardNumber = number.replaceAll("\\s+", "");
-        return number.length() > 20 && cardNumber.chars().allMatch(Character::isDigit) && validateCardNumber(cardNumber);
+        return number.length() < 20 && cardNumber.chars().allMatch(Character::isDigit) && validateCardNumber(cardNumber);
     }
 
     /**

@@ -1,34 +1,24 @@
 package com.creditcard.sample.controller;
 
 import com.creditcard.sample.model.CreditCard;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
@@ -54,7 +44,7 @@ class CreditCardControllerTest {
     @Test
     @DisplayName("When a creditCard creation is requested then it is persisted")
     void addCreditCard() throws Exception {
-        CreditCard creditCard = new CreditCard("1111 2222 3333 4434","Test User",3000);
+        CreditCard creditCard = new CreditCard("4929 3890 8814 2556","Test User",3000);
         CreditCard newCard =
                 mapper
                         .readValue(
@@ -71,6 +61,44 @@ class CreditCardControllerTest {
 
         assertThat(creditCard,equalTo(newCard));
         assertEquals(0,newCard.getBalance());
+
+    }
+
+    @Test
+    @DisplayName("When a creditCard creation is requested then it is persisted")
+    void addCreditCard_InvalidCard() throws Exception {
+        CreditCard creditCard = new CreditCard("4444 3333 2222 1221", "Test User", 3000);
+
+        String error = mockMvc
+                .perform(
+                        post("/creditcards/add")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(creditCard)))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertTrue(error.contains("Credit card Number is not valid."));
+
+    }
+
+    @Test
+    @DisplayName("When a creditCard creation is requested then it is persisted")
+    void addCreditCard_CardNumber_InvalidChar() throws Exception {
+        CreditCard creditCard = new CreditCard("4444 3333 1ad2 1221", "Test User", 3000);
+
+        String error = mockMvc
+                .perform(
+                        post("/creditcards/add")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(creditCard)))
+                .andExpect(status().is4xxClientError())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertTrue(error.contains("Credit card Number is not valid."));
 
     }
 }

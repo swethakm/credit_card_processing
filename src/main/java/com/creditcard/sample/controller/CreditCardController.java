@@ -24,7 +24,7 @@ public class CreditCardController {
 
     @PostMapping(value = "/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public CreditCard addCreditCard(@RequestBody CreditCard card) {
+    public CreditCard addCreditCard(@Valid @RequestBody CreditCard card) {
         return creditCardService.addCreditCard(card);
     }
 

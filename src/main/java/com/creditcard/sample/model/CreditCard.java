@@ -1,5 +1,7 @@
 package com.creditcard.sample.model;
 
+import com.creditcard.sample.validator.CardNumberConstraint;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,6 +15,7 @@ public class CreditCard {
 
     @Id
     @Column(name = "cardnumber")
+    @CardNumberConstraint
     @NotEmpty(message = "Please provide a valid Card Number")
     private String cardNumber;
 
